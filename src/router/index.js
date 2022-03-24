@@ -1,9 +1,10 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../components/Home.vue'
-import Rick from '../components/Rick.vue'
-import Morty from '../components/Morty.vue'
+import Locations from '../components/Location.vue'
+import Episodes from '../components/Episodes.vue'
 import Summer from '../components/Summer.vue'
+import LocationDetail from '../components/LocationDetail.vue'
 
 Vue.use(VueRouter)
 
@@ -14,19 +15,24 @@ const routes = [
     component: Home
   },
   {
-    path: '/rick',
-    name: 'Rick',
-    component: Rick
+    path: '/locations',
+    name: 'Locations',
+    component: Locations
   },
   {
-    path: '/morty',
-    name: 'Morty',
-    component: Morty
+    path: '/episodes',
+    name: 'Episodes',
+    component: Episodes
   },
   {
     path: '/summer',
     name: 'Summer',
     component: Summer
+  },
+  {
+    path: '/locationdetail',
+    name: 'Location Detail',
+    component: LocationDetail
   }
 ]
 

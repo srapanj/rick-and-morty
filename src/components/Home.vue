@@ -1,84 +1,128 @@
 <template>
-   <div>
-       <div class="is-flex mt-2 mb-0" style="justify-content:center!important;">
-           <!-- <div>
-               <p class="is-size-4 mx-3">Choose page</p>
-           </div> -->
-           <div>
-                <input v-model="page_data" class="input" type="number" placeholder="Text input">
-           </div>
-           <div>
-               <a class="is-size-4 mx-3" @click.prevent="getCharacters()" href="">Choose page</a>
-           </div>
-       </div>
-      <p class="mt-2 is-size-1 has-text-primary">{{characters.length}} characters</p>
-      <!-- <input type="text" v-model="search" placeholder="Search"> -->
-      <div class="content">
-        <div class="content-characters" v-for="(character, index) in characters" :key="index">
-        <div :class="[character.status == 'Dead' ? 'has-background-danger' : 'has-background-primary']">
-          <img class="mt-2" :src="character.image" alt="">
-        <div class="info-character">
-          <p class="is-size-4 mb-0" :class="{'has-text-white':  character.status == 'Dead'}"> {{ character.name}}</p>
-          <p class="is-size-5 mb-1" :class="{'has-text-white':  character.status == 'Dead'}">Was part of {{character.episode.length}} {{character.episode.length == 1 ? 'episode' : 'episodes'}}</p>
-          <div class="is-flex px-3 pb-2" style="justify-content: space-between!important;">
-              <div>
-                <p class="is-size-6" :class="{'has-text-white':  character.status == 'Dead'}"> {{ character.species}}</p>
-              </div>
-              <div>
-                <p class="is-size-6" :class="{'has-text-white':  character.status == 'Dead'}"> {{ character.status}}</p>  
-              </div>
+  <div class="container my-4">
+     <!-- <div class="control">
+        <h1>Rick and Morty characters</h1>
+        <p>Filter by:</p>
+        <label for="name">Name</label>
+        <input type="text" @keyup="filterIfFinishedTyping($event)" v-model="nameFilter"><br>
+        <label for="status">Status</label>
+        <select v-model="selectedStatusFilter" @change="statusChange($event)">
+          <option v-for="(option, index) in statusOptions" :key="index" :value="option.value">{{option.text}}</option>
+      </select>
+    </div> -->
+    <div class="columns is-gradient is-bold mt-3">
+        <div class="mr-3">
+         <p class="is-size-4">Search for character</p>
+        </div>
+        <div class="field has-addons is-pulled-right">
+          <div class="control">
+            <input
+              type="text"
+              v-model="search"
+              placeholder="Search by name"
+              class="input is-rounded"
+              @keyup="searchData($event)"
+            >
+          </div>
+          <div class="control">
+            <button @click="searchData" class="button is-success is-rounded">Search</button>
           </div>
         </div>
-        </div>
     </div>
-   </div>
+
+      <div class="columns is-desktop is-mobile is-table is-multiline">
+        <character
+          @showModal="showModal"
+          v-for="character in characters"
+          :key="character.id"
+          v-bind:character="character"
+        />
+      </div>
+      <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+        <a class="pagination-previous" @click="changePage(page - 1)">
+          <img class="mr-1" width="25px" height="25px" src="right-arrow.png" style="transform: scaleX(-1);">
+          Previous
+        </a>
+        <ul class="pagination-list">
+          <li>
+            <p class="is-size-5 mr-2">Current page</p>
+          </li>
+          <li>
+            <a class="pagination-link is-current">{{page}}</a>
+          </li>
+        </ul>
+        <a class="pagination-next" @click="changePage(page + 1)">
+          Next <img class="ml-1" src="right-arrow.png" alt="">
+          </a>
+      </nav>
+      <character-modal
+      :currentCharacter="currentCharacter"
+    />
   </div>
 </template>
-<script>
-import axios from 'axios'
 
+<script>
+import axios from "axios"
 export default {
-  name: 'app',
-  components: {
+  name: "app",
+   components:{
+    'character': () =>import('@/components/Character.vue'),
+    'character-modal': () =>import('@/components/modal/character_modal.vue'),
   },
-  data(){
+  data() {
     return {
-        page_data: 0,
-        characters: []
+      characters: [],
+      page: 1,
+      pages: 1,
+      show_modal: false,
+      currentCharacter: {},
+      search: '',
     }
   },
-//   created(){
-//     this.getCharacters()
-//   },
-//   watch:{
-//       characters: function(){
-//              axios.get('https://rickandmortyapi.com/api/character/?page=' + this.page_data)
-//       .then(res => {
-//           console.log('test', this.page_data)
-//         (this.characters = res.data.results)
-//       })
-//       .catch(e => {
-//         console.log(e)
-//       })
-//       }
-//   },
+  created() {
+    this.getCharacters();
+  },
   methods: {
-    getCharacters(){
-      axios.get('https://rickandmortyapi.com/api/character/?page=' + this.page_data)
-      .then(res => {
-          console.log('test', this.page_data)
-        (this.characters = res.data.results)
-      })
-      .catch(e => {
-        console.log(e)
-      })
+    getCharacters() {
+      let result = axios
+        .get(
+          `https://rickandmortyapi.com/api/character/?page=${this.page}&name=${
+            this.search
+          }`
+        )
+        .then(res => {
+          this.characters = res.data.results
+          this.pages = res.data.info.pages
+        })
+        .catch(err => {
+          console.log(err);
+        })
+    },
+    changePage(page) {
+      this.page = page <= 0 || page > this.pages ? this.page : page;
+      this.getCharacters();
+      window.scrollTo(500, 0);
+    },
+    searchData() {
+      this.page = 1;
+      this.getCharacters();
+    },
+    async getCharacter(id) {
+      let results = await axios.get(
+        `https://rickandmortyapi.com/api/character/${id}/`
+      );
+      this.currentCharacter = results.data;
+      this.show_modal = true;
+    },
+    showModal(id) {
+      this.getCharacter(id);
     }
-  },
-}
+
+  }
+};
 </script>
 
-
-<style >
+<style>
 html{
   background-color: #f8fafc!important;
 }
@@ -92,13 +136,4 @@ body {
   text-align: left;
   background-color: #f8fafc;
 }
- .content{
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 1fr;
-  gap: 30px 30px;
-  width: 80%;
-  margin: 0 auto;
-}
-
 </style>

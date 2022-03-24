@@ -15,16 +15,13 @@
   <div id="navbarBasicExample" class="navbar-menu">
     <div class="navbar-start">
         <router-link to="/">
-            <p class="navbar-item is-size-5">Home</p>
+            <p class="navbar-item is-size-5">Characters</p>
         </router-link>
-        <router-link to="/rick">
-            <p class="navbar-item is-size-5">Rick</p>
+        <router-link to="/locations">
+            <p class="navbar-item is-size-5">Locations</p>
         </router-link>
-         <router-link to="/morty">
-            <p class="navbar-item is-size-5">Morty</p>
-        </router-link>
-         <router-link to="/rick">
-            <p class="navbar-item is-size-5">Summer</p>
+         <router-link to="/episodes">
+            <p class="navbar-item is-size-5">Episodes</p>
         </router-link>
     </div>
 
