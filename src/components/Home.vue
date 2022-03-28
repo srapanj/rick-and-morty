@@ -84,7 +84,7 @@ export default {
   },
   methods: {
     getCharacters() {
-      let result = axios
+      axios
         .get(
           `https://rickandmortyapi.com/api/character/?page=${this.page}&name=${
             this.search
