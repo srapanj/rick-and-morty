@@ -38,27 +38,31 @@
           v-bind:character="character"
         />
       </div>
+
+
+
       <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-        <a class="pagination-previous" @click="changePage(page - 1)">
+        <!-- <a class="pagination-previous" @click="changePage(page - 1)">
           <img class="mr-1" width="25px" height="25px" src="right-arrow.png" style="transform: scaleX(-1);">
           Previous
-        </a>
+        </a> -->
         <ul class="pagination-list">
           <li>
-            <p class="is-size-5 mr-2">Current page</p>
+            <p class="is-size-5 mr-2">Pick a page</p>
           </li>
           <li>
-            <a class="pagination-link is-current">{{page}}</a>
+            <a @click.prevent="changePage(page_nr)" v-for="(page_nr, index) in pages" :key="index" class="pagination-link is-current">{{page_nr}} </a>
           </li>
         </ul>
-        <a class="pagination-next" @click="changePage(page + 1)">
+        <!-- <a class="pagination-next" @click.prevent="changePage(page + 1)">
           Next <img class="ml-1" src="right-arrow.png" alt="">
-          </a>
+          </a> -->
       </nav>
       <character-modal
       :currentCharacter="currentCharacter"
     />
   </div>
+  
 </template>
 
 <script>
@@ -83,6 +87,10 @@ export default {
     this.getCharacters();
   },
   methods: {
+    statusChange(e){
+      console.log('test', e.target.value, this.characters)
+      this.characters = this.characters.filter(c => c.status.toLowerCase() == e.target.value.toLowerCase())
+    },
     getCharacters() {
       axios
         .get(
